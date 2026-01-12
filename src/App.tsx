@@ -1,8 +1,9 @@
 import './App.scss';
-import { TodoList } from './components/TodoList';
+// import { TodoList } from './components/TodoList';
 
 import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
+import { useState } from 'react';
 
 function getUserById(userId: number) {
   return usersFromServer.find(user => user.id === userId) || null;
@@ -14,21 +15,54 @@ export const todos = todosFromServer.map(todo => ({
 }));
 
 export const App = () => {
+  // const [currentToDos, setCurrentToDos] = useState(todos);
+
+  const [title, setTitle] = useState('');
+  const [chosenUser, setChosenUser] = useState(0);
+
+  const addToDo = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!title || !chosenUser) {
+      return;
+    }
+
+    // const newToDo = {
+    //   id: 1,
+    //   title: title,
+    //   userId: chosenUser,
+    // };
+
+    // setCurrentToDos(currentToDos => [newToDo, ...currentToDos]);
+  };
+
   return (
     <div className="App">
       <h1>Add todo form</h1>
 
-      <form action="/api/todos" method="POST">
+      <form action="/api/todos" method="POST" onSubmit={addToDo}>
         <div className="field">
-          <input type="text" data-cy="titleInput" />
+          <input
+            type="text"
+            data-cy="titleInput"
+            value={title}
+            onChange={event => setTitle(event.target.value)}
+          />
           <span className="error">Please enter a title</span>
         </div>
 
         <div className="field">
-          <select data-cy="userSelect">
+          <select
+            data-cy="userSelect"
+            value={chosenUser}
+            onChange={event => setChosenUser(+event.target.value)}
+          >
             <option value="0" disabled>
               Choose a user
             </option>
+            {usersFromServer.map(user => (
+              <option key={user.id}>{user.name}</option>
+            ))}
           </select>
 
           <span className="error">Please choose a user</span>
@@ -39,7 +73,7 @@ export const App = () => {
         </button>
       </form>
 
-      <TodoList todos={todos} />
+      {/* <TodoList todos={currentToDos} /> */}
     </div>
   );
 };
